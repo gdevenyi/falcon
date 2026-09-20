@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
       std::cerr<<"Error reding ply:"<<argv[1]<<std::endl;
       return 1;
     }
-  } catch (const cxxopts::OptionException& e)
+  } catch (const cxxopts::exceptions::exception& e)
   {
     std::cerr << "error parsing options: " << e.what() << std::endl;
     return 1;
