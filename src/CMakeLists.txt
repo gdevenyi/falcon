@@ -108,8 +108,8 @@ set_property(TARGET minc2-simple PROPERTY EXPORT_NAME minc2-simple)
 ADD_SUBDIRECTORY(igl)
 
 
-SET(NIFTI_LIB_HDR nifti1.h nifti1_io.h)
-SET(NIFTI_LIB_SRC znzlib.c nifti1_io.c )
+SET(NIFTI_LIB_HDR 3rd_party/nifti/nifti1.h 3rd_party/nifti/nifti1_io.h 3rd_party/nifti/znzlib.h)
+SET(NIFTI_LIB_SRC 3rd_party/nifti/znzlib.c 3rd_party/nifti/nifti1_io.c)
 
 SET(FALCON_LIB_HDR
     falcon.h
@@ -190,20 +190,19 @@ SET(FALCON_LIB_SRC
 
 
 
-if(NOT LIBMINC_NIFTI_SUPPORT)
-  #ADD_LIBRARY(nifti_lib ${NIFTI_LIB_HDR}  ${NIFTI_LIB_SRC})
-  #LINK_LIBRARIES(nifti_lib)
-  SET(FALCON_LIB_SRC ${NIFTI_LIB_SRC} ${FALCON_LIB_SRC} )
-  SET(FALCON_LIB_HDR ${NIFTI_LIB_HDR} ${FALCON_LIB_HDR})
-else()
-  # using lib_nifti bundled with libminc 
-  message("Using libnifti bundled with libminc!")
-  #ADD_LIBRARY(nifti_lib_dummy nifti1_dummy.c)
-  #LINK_LIBRARIES(nifti_lib_dummy)
-  SET(FALCON_LIB_SRC ${FALCON_LIB_SRC} nifti1_dummy.c)
-endif()
-
 ADD_LIBRARY(falcon_lib ${FALCON_LIB_HDR}  ${FALCON_LIB_SRC})
+
+# With NIfTI support, libminc carries nifti_clib with each symbol renamed to minc_*.
+# LIBMINC::nifti gives the headers that apply the same rename. A libminc without
+# this target (older than BIC-MNI/libminc#156) gets our own copy.
+if(TARGET LIBMINC::nifti)
+  message(STATUS "Using libnifti from libminc (LIBMINC::nifti)")
+  target_link_libraries(falcon_lib PUBLIC LIBMINC::nifti)
+else()
+  message(STATUS "Using the libnifti copy in 3rd_party/nifti")
+  target_sources(falcon_lib PRIVATE ${NIFTI_LIB_SRC} ${NIFTI_LIB_HDR})
+  target_include_directories(falcon_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/nifti)
+endif()
 
 LINK_LIBRARIES(falcon_lib)
 

@@ -1267,10 +1267,6 @@ int niik_image_write(const char *fname,nifti_image *img) {
       fprintf(stdout,"[%s] write\n",fcname);
     }
     nifti_image_write(img);
-    if(nifti_io_get_problem_code_kunio()>0) {
-      fprintf(stderr,"[%s] ERROR: nifti_image_write\n",fcname);
-      return 0;
-    }
   }
 #if NIIK_MINC_SUPPORT==TRUE
   else if(  !strncmp(fname+(strlen(fname)-4),".mnc",4) ) {
@@ -1289,10 +1285,6 @@ int niik_image_write(const char *fname,nifti_image *img) {
       return 0;
     }
     nifti_image_write(img);
-    if(nifti_io_get_problem_code_kunio()>0) {
-      fprintf(stderr,"[%s] ERROR: nifti_image_write\n",fcname);
-      return 0;
-    }
   } else {
     fprintf(stderr,"[%s] ERROR: unknown output image format\n",fcname);
     return 0;

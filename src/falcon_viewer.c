@@ -3555,31 +3555,9 @@ static void NVK_write_mask(char *filename,nifti_image *maskimg)
   if(!strncmp(filename+(strlen(filename)-7),".nii.gz",7)) {
     if(verbose>0) fprintf(stderr,"[%s] writing .nii.gz file, %s\n",fcname,filename);
     nifti_image_write(maskimg);
-    if(nifti_io_get_problem_code_kunio()>0) {
-      fprintf(stderr,"[%s] ERROR: nifti_image_write\n",fcname);
-      dialog = gtk_message_dialog_new( GTK_WINDOW(g_main_window),
-                                       GTK_DIALOG_MODAL,
-                                       GTK_MESSAGE_ERROR,
-                                       GTK_BUTTONS_OK,
-                                       "***ERROR***\ncould not write mask:\n%s\n",filename);
-      gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
-      return;
-    }
   } else if(!strncmp(filename+(strlen(filename)-4),".nii",4)) {
     if(verbose>0) fprintf(stderr,"[%s] writing .nii file, %s\n",fcname,filename);
     nifti_image_write(maskimg);
-    if(nifti_io_get_problem_code_kunio()>0) {
-      fprintf(stderr,"[%s] ERROR: nifti_image_write\n",fcname);
-      dialog = gtk_message_dialog_new( GTK_WINDOW(g_main_window),
-                                       GTK_DIALOG_MODAL,
-                                       GTK_MESSAGE_ERROR,
-                                       GTK_BUTTONS_OK,
-                                       "***ERROR***\ncould not write mask:\n%s\n",filename);
-      gtk_dialog_run (GTK_DIALOG (dialog));
-      gtk_widget_destroy (dialog);
-      return;
-    }
   } else if(!strncmp(filename+(strlen(filename)-4),".mnc",4)) {
     if(NVK_write_minc_mask(filename,g_maskimg)==0) {
       fprintf(stderr,"[%s] ERROR: NVK_write_minc_mask\n",fcname);
