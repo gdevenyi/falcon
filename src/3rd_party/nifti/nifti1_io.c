@@ -7545,20 +7545,3 @@ int nifti_disp_type_list( int which )
     return 0;
 }
 
-/*----------------------------------------------------------------------*/
-/* Custom error-tracking functions added by Kunio.
-   These must be present in nifti1_io.c so that the symbol is available
-   when FALCON builds its own NIfTI library (LIBMINC_NIFTI_SUPPORT=OFF).
-   A duplicate stub lives in nifti1_dummy.c for the case where libminc
-   bundles its own libnifti (LIBMINC_NIFTI_SUPPORT=ON).                 */
-
-static int nifti_io_problem_code_kunio = 0;
-
-int nifti_io_get_problem_code_kunio(void) {
-  return nifti_io_problem_code_kunio;
-}
-
-void nifti_io_set_problem_code_kunio(int i) {
-  nifti_io_problem_code_kunio = i;
-}
-

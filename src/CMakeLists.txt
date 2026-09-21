@@ -108,8 +108,8 @@ set_property(TARGET minc2-simple PROPERTY EXPORT_NAME minc2-simple)
 ADD_SUBDIRECTORY(igl)
 
 
-SET(NIFTI_LIB_HDR nifti1.h nifti1_io.h)
-SET(NIFTI_LIB_SRC znzlib.c nifti1_io.c )
+SET(NIFTI_LIB_HDR 3rd_party/nifti/nifti1.h 3rd_party/nifti/nifti1_io.h 3rd_party/nifti/znzlib.h)
+SET(NIFTI_LIB_SRC 3rd_party/nifti/znzlib.c 3rd_party/nifti/nifti1_io.c)
 
 SET(FALCON_LIB_HDR
     falcon.h
@@ -190,20 +190,26 @@ SET(FALCON_LIB_SRC
 
 
 
-if(NOT LIBMINC_NIFTI_SUPPORT)
-  #ADD_LIBRARY(nifti_lib ${NIFTI_LIB_HDR}  ${NIFTI_LIB_SRC})
-  #LINK_LIBRARIES(nifti_lib)
+# libminc can bundle nifti_clib and rename each of its symbols to minc_* with macros
+# in its nifti1_io.h (minc-toolkit-v2 1.9.18 does this). Then we must compile against
+# that header. Look only in the libminc include directory: a system nifti1_io.h
+# does not match the libminc library.
+if(LIBMINC_NIFTI_SUPPORT)
+  get_target_property(LIBMINC_MAIN_INCLUDE_DIR LIBMINC::minc2 INTERFACE_INCLUDE_DIRECTORIES)
+  find_path(NIFTI_INCLUDE_DIR nifti1_io.h PATHS ${LIBMINC_MAIN_INCLUDE_DIR} PATH_SUFFIXES nifti NO_DEFAULT_PATH)
+endif()
+
+if(NIFTI_INCLUDE_DIR)
+  message(STATUS "Using libnifti bundled with libminc: ${NIFTI_INCLUDE_DIR}")
+else()
+  message(STATUS "Using the libnifti copy in 3rd_party/nifti")
+  SET(NIFTI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/nifti)
   SET(FALCON_LIB_SRC ${NIFTI_LIB_SRC} ${FALCON_LIB_SRC} )
   SET(FALCON_LIB_HDR ${NIFTI_LIB_HDR} ${FALCON_LIB_HDR})
-else()
-  # using lib_nifti bundled with libminc 
-  message("Using libnifti bundled with libminc!")
-  #ADD_LIBRARY(nifti_lib_dummy nifti1_dummy.c)
-  #LINK_LIBRARIES(nifti_lib_dummy)
-  SET(FALCON_LIB_SRC ${FALCON_LIB_SRC} nifti1_dummy.c)
 endif()
 
 ADD_LIBRARY(falcon_lib ${FALCON_LIB_HDR}  ${FALCON_LIB_SRC})
+target_include_directories(falcon_lib PUBLIC ${NIFTI_INCLUDE_DIR})
 
 LINK_LIBRARIES(falcon_lib)
 
