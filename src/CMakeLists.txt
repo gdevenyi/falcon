@@ -33,14 +33,14 @@ ENDIF()
 # STB
 #ADD_SUBDIRECTORY(3rd_party/stb)
 
-INCLUDE( ${LIBMINC_USE_FILE} )
-
+# SYSTEM makes the compiler search these directories after our own.
+# minc-toolkit installs headers with the same names as ours, for example cxxopts.hpp.
 IF(HAVE_BICPL)
-  INCLUDE_DIRECTORIES(${BICPL_INCLUDE_DIRS})
+  INCLUDE_DIRECTORIES(SYSTEM ${BICPL_INCLUDE_DIRS})
   LINK_DIRECTORIES(${BICPL_LIBRARY_DIRS})
 ENDIF(HAVE_BICPL)
 
-LINK_LIBRARIES(${LIBMINC_LIBRARIES})
+LINK_LIBRARIES(LIBMINC::minc2)
 
 # IF(HAVE_LIBTIFF)
 #   INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIRS})
