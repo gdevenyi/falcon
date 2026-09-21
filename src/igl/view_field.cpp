@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
       std::cerr<<"Usage:"<<argv[0]<<" input.off/ply [measurement.csv] [measurements field no]"<<std::endl;
       return 1;
     }
-  } catch(const cxxopts::OptionException& err) { 
+  } catch(const cxxopts::exceptions::exception& err) { 
       std::cerr<<"Usage:"<<argv[0]<<" input.off/ply [measurement.csv] [measurements field no]"<<std::endl;
 
   }
